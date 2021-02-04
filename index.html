@@ -32,9 +32,7 @@
 
                         <span class="input-group-text" id="basic-addon1">Event Ttitle</span>
                     
-                        <input type="text" class="form-control" id="eventTitle" aria-describedby="eventTitle" style="margin-right: 10px;">
-
-                        <span id="eventTitleWarning" style='visibility: hidden;' class="badge bg-danger">Required</span>
+                        <input type="text" class="form-control" id="eventTitle" aria-describedby="eventTitle" style="margin-right: 10px;" required>
                     
                     </div>
 
@@ -134,10 +132,8 @@
                     <div class="input-group mb-3">
                         
                         <span class="input-group-text" id="basic-addon1">Time</span> 
-                        
-                        <input type="text" id="time" class="form-control" placeholder="XX:XX PM" aria-label="Time" aria-describedby="basic-addon1" style="margin-right: 10px;">
 
-                        <span id="timeWarning" style='visibility: hidden;' class="badge bg-danger">Invalid Format: Needs to be XX:XX AM/PM</span>
+                        <input type="time" id="time" aria-describedby="basic-addon1" style="margin-right: 10px;" name="time"  required>
                       
                     </div>
 
@@ -220,7 +216,7 @@
     }
 
 
-    function nextDayAndTime(dayOfWeek, time12) {
+    function nextDayAndTime(dayOfWeek, timeArr) {
 
         try{
 
@@ -233,15 +229,6 @@
                 "FR":5,
                 "SA":6,
             }
-
-            let time = time12;
-            let hours = Number(time.match(/^(\d+)/)[1]);
-            let minutes = Number(time.match(/:(\d+)/)[1]);
-            let AMPM = time.match(/\s(.*)$/)[1];
-            if(AMPM == "PM" && hours<12) hours = hours+12;
-            if(AMPM == "AM" && hours==12) hours = hours-12;
-            let sHours = hours.toString();
-            let sMinutes = minutes.toString();
     
             var now = new Date()
     
@@ -249,11 +236,10 @@
                     now.getFullYear(),
                     now.getMonth(),
                     now.getDate() + (7 + dayConvert[dayOfWeek] - now.getDay()) % 7,
-                    sHours,
-                    sMinutes
+                    timeArr[0],
+                    timeArr[1]
             )
 
-    
             if (result < now)
     
                 result.setDate(result.getDate() + 7)
@@ -277,36 +263,6 @@
     $('#dateForm').submit(function(e) {
 
         e.preventDefault()
-
-        try{
-
-            if($("#eventTitle").val() == ""){
-
-                $("#eventTitleWarning").attr('style','visibility: visible;')
-
-                return false
-
-            }
-
-            let timeInput = $("#time").val()
-
-            let hours = Number(timeInput.match(/^(\d+)/)[1]);
-            let minutes = Number(timeInput.match(/:(\d+)/)[1]);
-            let AMPM = timeInput.match(/\s(.*)$/)[1];
-
-
-            $("#eventTitleWarning").attr('style','visibility: hidden;')
-
-            $("#timeWarning").attr('style','visibility: hidden;')
-
-
-        }catch{
-
-            $("#timeWarning").attr('style','visibility: visible;')
-
-            return false
-
-        }
 
         let calObj = {
 
@@ -352,7 +308,7 @@
 
             }else if(input.attr('id') == 'time'){
 
-                calObj.time = input.val()
+                calObj.time = input.val().split(':')
 
             }
     
